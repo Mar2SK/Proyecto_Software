@@ -1,0 +1,25 @@
+body {
+    font-family: Arial;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    display: inline-block;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+.disponible {
+    background-color: green;
+}
+
+.reservado {
+    background-color: orange;
+}
+
+.vendido {
+    background-color: red;
+}

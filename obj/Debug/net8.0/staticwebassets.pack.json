@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.EntradasAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.EntradasAPI.props",
+      "PackagePath": "build\\EntradasAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.EntradasAPI.props",
+      "PackagePath": "buildMultiTargeting\\EntradasAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.EntradasAPI.props",
+      "PackagePath": "buildTransitive\\EntradasAPI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

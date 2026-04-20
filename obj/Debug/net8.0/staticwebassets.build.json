@@ -1,0 +1,39 @@
+{
+  "Version": 1,
+  "Hash": "3yKucbLtgwT1NqOKxxkc7ydvzjGMgfIySLCNQIBe6QQ=",
+  "Source": "EntradasAPI",
+  "BasePath": "_content/EntradasAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "EntradasAPI\\wwwroot",
+      "Source": "EntradasAPI",
+      "ContentRoot": "E:\\ticket-api\\EntradasAPI\\wwwroot\\",
+      "BasePath": "_content/EntradasAPI",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "E:\\ticket-api\\EntradasAPI\\wwwroot\\index.html",
+      "SourceId": "EntradasAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\ticket-api\\EntradasAPI\\wwwroot\\",
+      "BasePath": "_content/EntradasAPI",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    }
+  ]
+}
