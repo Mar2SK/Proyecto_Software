@@ -1,8 +1,32 @@
 {
   "Files": [
     {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\app.js",
+      "PackagePath": "staticwebassets\\app.js"
+    },
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\auditoria.html",
+      "PackagePath": "staticwebassets\\auditoria.html"
+    },
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\checkout.html",
+      "PackagePath": "staticwebassets\\checkout.html"
+    },
+    {
       "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\index.html",
       "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\seats.html",
+      "PackagePath": "staticwebassets\\seats.html"
+    },
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\styles.css",
+      "PackagePath": "staticwebassets\\styles.css"
+    },
+    {
+      "Id": "E:\\ticket-api\\EntradasAPI\\wwwroot\\ticket.html",
+      "PackagePath": "staticwebassets\\ticket.html"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.EntradasAPI.Microsoft.AspNetCore.StaticWebAssets.props",

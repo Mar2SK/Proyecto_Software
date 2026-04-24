@@ -73,34 +73,52 @@ using (var scope = app.Services.CreateScope())
 
     // Asientos
     if (!db.Seats.Any())
-    {
-        var sectorA = db.Sectors.First(s => s.Name == "Sector A");
-        var sectorB = db.Sectors.First(s => s.Name == "Sector B");
+{
+    var eventos = db.Events.ToList();
 
+    foreach (var evento in eventos)
+    {
+        var sectorA = new Sector
+        {
+            Name = "Platea",
+            EventId = evento.Id
+        };
+
+        var sectorB = new Sector
+        {
+            Name = "Campo",
+            EventId = evento.Id
+        };
+
+        db.Sectors.AddRange(sectorA, sectorB);
+
+        db.SaveChanges();
+
+        // 50 asientos Platea
         for (int i = 1; i <= 50; i++)
         {
             db.Seats.Add(new Seat
             {
-                EventId = 1,
+                EventId = evento.Id,
                 Number = i,
-                SectorId = sectorA.Id,
-                Status = "Disponible"
+                SectorId = sectorA.Id
             });
         }
 
+        // 50 asientos Campo
         for (int i = 51; i <= 100; i++)
         {
             db.Seats.Add(new Seat
             {
-                EventId = 1,
+                EventId = evento.Id,
                 Number = i,
-                SectorId = sectorB.Id,
-                Status = "Disponible"
+                SectorId = sectorB.Id
             });
         }
-
-        db.SaveChanges();
     }
+
+    db.SaveChanges();
+}
 }
 
 app.Run();

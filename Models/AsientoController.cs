@@ -34,54 +34,147 @@ namespace EntradasApi.Controllers
         }
 
         [HttpPost("{id}/reservar")]
-        public IActionResult ReservarAsiento(int eventId, int id)
-        {
-            //DOBLE VALIDACION
-            var asiento = _context.Seats
-            .Where(s => s.Id == id && s.EventId == eventId)
-            .FirstOrDefault();
-
-            if (asiento == null)
-            return NotFound("Asiento no encontrado");
-
-            if (asiento.Status != "Disponible")
-            return Conflict("El asiento ya está reservado o vendido");
-
-            asiento.Status = "Reservado";
-            asiento.ReservationTime = DateTime.Now;
-            _context.SaveChanges();
-
-            // AUDITORA
-            AuditoriaController.logs.Add(new Auditoria
+            public IActionResult ReservarAsiento(
+                int eventId,
+                int id)
             {
-                Accion = "Reserva",
-                Descripcion = $"Se reservó el asiento {asiento.Id}",
-            });
+                var asiento = _context.Seats
+                    .FirstOrDefault(s =>
+                        s.Id == id &&
+                        s.EventId == eventId);
+            
+                if (asiento == null)
+                {
+                    return NotFound(
+                        "Asiento no encontrado");
+                }
 
-            return Ok(asiento);
-        }
+                // SOLO DISPONIBLE
+                if (asiento.Status != "Disponible")
+                {
+                    return Conflict(
+                        "El asiento ya está reservado o vendido");
+                }
 
-        [HttpPost("{id}/comprar")]
-        public IActionResult ComprarAsiento(int eventId, int id)
+                // RESERVAR
+                asiento.Status = "Reservado";
+
+                // IMPORTANTE
+                asiento.ReservationTime = DateTime.UtcNow;
+
+                _context.SaveChanges();
+
+                AuditoriaController.logs.Add(
+                    new Auditoria
+                    {
+                        Accion = "Reserva",
+
+                        Descripcion =
+                            $"Asiento: {asiento.Number} | " +
+                            $"Evento: {eventId} | " +
+                            $"Estado: RESERVADO",
+
+                        Fecha = DateTime.UtcNow
+                    });
+
+                return Ok(asiento);
+            }
+
+        [HttpPost("{id}/refresh")]
+        public IActionResult RefreshReserva(int eventId, int id)
         {
             var asiento = _context.Seats
-            .FirstOrDefault(s => s.Id == id && s.EventId == eventId);
-
+                .FirstOrDefault(s =>
+                    s.Id == id &&
+                    s.EventId == eventId);
+        
             if (asiento == null)
-            return NotFound("Asiento no encontrado");
+                return NotFound();
 
             if (asiento.Status != "Reservado")
-            return Conflict("El asiento debe estar reservado antes de comprar");
+                return Conflict();
+        
+            asiento.ReservationTime = DateTime.UtcNow;
+        
+            _context.SaveChanges();
+        
+            return Ok();
+            }
+
+        [HttpPost("{id}/cancelar")]
+        public IActionResult CancelarReserva(int eventId, int id)
+        {
+            var asiento = _context.Seats
+                .FirstOrDefault(s =>
+                    s.Id == id &&
+                    s.EventId == eventId);
+
+            if (asiento == null)
+                return NotFound();
+
+            if (asiento.Status == "Reservado")
+            {
+                asiento.Status = "Disponible";
+                asiento.ReservationTime = null;
+
+                _context.SaveChanges();
+
+                AuditoriaController.logs.Add(new Auditoria
+                {
+                    Accion = "Liberación",
+
+                    Descripcion =
+                        $"Asiento: {asiento.Number} | " +
+                        $"Evento: {eventId} | " +
+                        $"Estado: CANCELADO"
+                });
+            }
+
+    return Ok();
+}
+        [HttpPost("{id}/comprar")]
+        public IActionResult ComprarAsiento(
+        int eventId,
+        int id,
+            [FromBody] CompraRequest compra)
+        {
+            var asiento = _context.Seats
+                .FirstOrDefault(s => s.Id == id && s.EventId == eventId);
+
+            if (asiento == null)
+                return NotFound("Asiento no encontrado");
+            if (
+                asiento.ReservationTime.HasValue &&
+                asiento.ReservationTime.Value.AddMinutes(5) < DateTime.UtcNow
+            )
+            {
+                asiento.Status = "Disponible";
+                asiento.ReservationTime = null;
+
+                _context.SaveChanges();
+
+                return Conflict("La reserva expiró");
+            }
+            
+            if (asiento.Status != "Reservado")
+                return Conflict("El asiento debe estar reservado antes de comprar");
 
             asiento.Status = "Vendido";
+
             _context.SaveChanges();
-            
+
             AuditoriaController.logs.Add(new Auditoria
             {
-            Accion = "Compra",
-            Descripcion = $"Se compró el asiento {asiento.Id}",
-            });
-            return Ok(asiento);
-        }
+                Accion = "Compra",
+
+        Descripcion =
+            $"Compra realizada por {compra.Nombre} {compra.Apellido} | " +
+            $"Email: {compra.Email} | " +
+            $"Asiento: {asiento.Number} | " +
+            $"Evento: {eventId}"
+    });
+
+    return Ok(asiento);
+}
     }
 }

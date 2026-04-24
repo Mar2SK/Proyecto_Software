@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Checkout</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+}
+
+.container{
+    width:400px;
+    margin:50px auto;
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+.ticket{
+    background:#334155;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+.backButton{
+    background:#475569;
+}
+
+.backButton:hover{
+    background:#334155;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>💳 Finalizar Compra</h1>
+
+<h2 id="timer" style="text-align:center;color:#facc15;">
+    05:00
+</h2>
+
+<div class="ticket">
+    <h3>Asientos seleccionados:</h3>
+    <div id="seats"></div>
+</div>
+
+<input type="text" id="nombre" placeholder="Nombre">
+
+<input type="text" id="apellido" placeholder="Apellido">
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="text" id="tarjeta" placeholder="Tarjeta">
+
+<button onclick="comprar()">
+    Confirmar compra
+</button>
+
+<button class="backButton" onclick="volver()">
+    Volver
+</button>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const eventId = params.get("eventId");
+
+const selectedSeats =
+    JSON.parse(localStorage.getItem("selectedSeats")) || [];
+
+// SI NO HAY ASIENTOS
+if(selectedSeats.length === 0){
+
+    window.location.href = "index.html";
+}
+
+// MOSTRAR ASIENTOS
+document.getElementById("seats").innerText =
+    selectedSeats.join(", ");
+
+
+// RESERVAR
+async function reservarAsientos(){
+
+    for(const seatId of selectedSeats){
+
+        const response = await fetch(
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/reservar`,
+            {
+                method:"POST"
+            }
+        );
+
+        if(!response.ok){
+
+            alert("Uno de los asientos ya no está disponible");
+
+            localStorage.removeItem("selectedSeats");
+
+            window.location.href =
+                `seats.html?eventId=${eventId}`;
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+// COMPRAR
+async function comprar(){
+
+    for(const seatId of selectedSeats){
+
+        const response = await fetch(
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/comprar`,
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+
+                    nombre:
+                        document.getElementById("nombre").value,
+
+                    apellido:
+                        document.getElementById("apellido").value,
+
+                    email:
+                        document.getElementById("email").value,
+
+                    tarjeta:
+                        document.getElementById("tarjeta").value
+                })
+            }
+        );
+
+        if(!response.ok){
+
+            alert("Uno de los asientos ya no están disponibles");
+
+            return;
+        }
+    }
+
+    alert("Compra realizada correctamente");
+
+    localStorage.removeItem("selectedSeats");
+
+    window.location.href = "index.html";
+}
+
+
+// VOLVER
+async function volver(){
+
+    for(const seatId of selectedSeats){
+
+        await fetch(
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/cancelar`,
+            {
+                method:"POST"
+            }
+        );
+    }
+
+    localStorage.removeItem("selectedSeats");
+
+    window.location.href =
+        `seats.html?eventId=${eventId}`;
+}
+
+
+// TIMER
+let time = 300;
+
+const timer = setInterval(async () => {
+
+    time--;
+
+    const minutes =
+        Math.floor(time / 60);
+
+    const seconds =
+        time % 60;
+
+    document.getElementById("timer").innerText =
+        `${minutes}:${seconds.toString().padStart(2,'0')}`;
+
+    if(time <= 0){
+
+        clearInterval(timer);
+
+        // LIBERAR
+        for(const seatId of selectedSeats){
+
+            await fetch(
+                `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/cancelar`,
+                {
+                    method:"POST"
+                }
+            );
+        }
+
+        localStorage.removeItem("selectedSeats");
+
+        alert("La reserva expiró");
+
+        window.location.href =
+            `seats.html?eventId=${eventId}`;
+    }
+
+},1000);
+
+
+// INICIAR RESERVA
+reservarAsientos();
+// MANTENER RESERVA VIVA
+setInterval(async () => {
+
+    for(const seatId of selectedSeats){
+
+        await fetch(
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/refresh`,
+            {
+                method:"POST"
+            }
+        );
+    }
+
+},30000);
+</script>
+
+</body>
+</html>

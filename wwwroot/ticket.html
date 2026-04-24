@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ticket</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.ticket{
+    width:450px;
+    background:#1e293b;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 0 30px rgba(0,0,0,0.5);
+}
+
+.header{
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    padding:30px;
+    text-align:center;
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+}
+
+.content{
+    padding:30px;
+}
+
+.row{
+    margin-bottom:20px;
+}
+
+.label{
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.value{
+    font-size:20px;
+    margin-top:5px;
+}
+
+.qr{
+    margin-top:30px;
+    text-align:center;
+    font-size:80px;
+}
+
+.button{
+    width:100%;
+    margin-top:30px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#22c55e;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.button:hover{
+    background:#16a34a;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="ticket">
+
+<div class="header">
+    <h1>🎟 Ticket Confirmado</h1>
+</div>
+
+<div class="content">
+
+<div class="row">
+    <div class="label">Comprador</div>
+    <div class="value" id="nombre"></div>
+</div>
+
+<div class="row">
+    <div class="label">Email</div>
+    <div class="value" id="email"></div>
+</div>
+
+<div class="row">
+    <div class="label">Evento</div>
+    <div class="value" id="evento"></div>
+</div>
+
+<div class="row">
+    <div class="label">Asientos</div>
+    <div class="value" id="asientos"></div>
+</div>
+
+<div class="row">
+    <div class="label">Fecha</div>
+    <div class="value" id="fecha"></div>
+</div>
+
+<div class="qr">
+    🎫
+</div>
+
+<button class="button"
+onclick="volver()">
+
+Volver al inicio
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const data =
+    JSON.parse(localStorage.getItem("ticketData"));
+
+if(!data){
+
+    window.location.href = "/index.html";
+}
+
+document.getElementById("nombre").innerText =
+    `${data.nombre} ${data.apellido}`;
+
+document.getElementById("email").innerText =
+    data.email;
+
+document.getElementById("evento").innerText =
+    data.eventId == 1
+    ? "Duki World Tour"
+    : "Coldplay Live";
+
+document.getElementById("asientos").innerText =
+    data.seats.join(", ");
+
+document.getElementById("fecha").innerText =
+    data.fecha;
+
+function volver(){
+
+    localStorage.removeItem("ticketData");
+
+    window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+</html>

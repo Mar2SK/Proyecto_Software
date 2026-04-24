@@ -127,3 +127,4 @@ E:\ticket-api\EntradasAPI\bin\Debug\net8.0\runtimes\win-arm64\native\e_sqlite3.d
 E:\ticket-api\EntradasAPI\bin\Debug\net8.0\runtimes\win-x64\native\e_sqlite3.dll
 E:\ticket-api\EntradasAPI\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
 E:\ticket-api\EntradasAPI\bin\Debug\net8.0\EntradasAPI.staticwebassets.runtime.json
+E:\ticket-api\EntradasAPI\obj\Debug\net8.0\EntradasAPI.sourcelink.json

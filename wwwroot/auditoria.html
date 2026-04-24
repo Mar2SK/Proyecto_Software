@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Auditoría</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    padding:40px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.backButton{
+    background:#334155;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.backButton:hover{
+    background:#475569;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#1e293b;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+th{
+    background:#334155;
+    padding:15px;
+    text-align:left;
+}
+
+td{
+    padding:15px;
+    border-top:1px solid #475569;
+}
+
+.reserva{
+    color:#facc15;
+    font-weight:bold;
+}
+
+.compra{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.liberacion{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="topbar">
+
+<h1>📋 Auditoría del Sistema</h1>
+
+<button class="backButton" onclick="volver()">
+    ← Inicio
+</button>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Acción</th>
+<th>Descripción</th>
+<th>Fecha</th>
+</tr>
+</thead>
+
+<tbody id="logs">
+</tbody>
+
+</table>
+
+<script>
+
+async function loadAuditoria(){
+
+    const response =
+        await fetch("http://localhost:5123/api/Auditoria");
+
+    const logs = await response.json();
+
+    const tbody =
+        document.getElementById("logs");
+
+    tbody.innerHTML = "";
+
+    logs.reverse().forEach(log => {
+
+        let clase = "";
+
+        if(log.accion === "Reserva")
+            clase = "reserva";
+
+        if(log.accion === "Compra")
+            clase = "compra";
+
+        if(log.accion === "Liberación")
+            clase = "liberacion";
+
+        tbody.innerHTML += `
+            <tr>
+                <td class="${clase}">
+                    ${log.accion}
+                </td>
+
+                <td style="line-height:1.6;">
+                    ${log.descripcion
+                    .replace("|","<br>")
+                    .replace("|","<br>")
+                    .replace("|","<br>")
+                    .replace("|","<br>")}
+                </td>
+
+                <td>
+                    ${new Date(log.fecha)
+                        .toLocaleString()}
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function volver(){
+
+    window.location.href = "index.html";
+}
+
+loadAuditoria();
+
+setInterval(loadAuditoria,3000);
+
+</script>
+
+</body>
+</html>

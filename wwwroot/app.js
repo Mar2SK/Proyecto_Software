@@ -1,78 +1,33 @@
-const API = "http://localhost:5000/api";
+const API_URL = "http://localhost:5123/api/events";
 
 async function loadEvents() {
-    const res = await fetch(`${API}/event`);
-    const data = await res.json();
+    const res = await fetch(API_URL);
+    const events = await res.json();
 
-    const container = document.getElementById("events");
+    const container = document.getElementById("eventsContainer");
     container.innerHTML = "";
 
-    data.forEach(e => {
-        const btn = document.createElement("button");
-        btn.innerText = e.name;
+    events.forEach(e => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-        btn.onclick = () => loadSeats(e.id);
-
-        container.appendChild(btn);
-    });
-}
-
-async function loadSeats(eventId) {
-    const res = await fetch(`${API}/seats/${eventId}`);
-    const seats = await res.json();
-
-    const container = document.getElementById("seats");
-    container.innerHTML = "";
-
-    seats.forEach(seat => {
-        const div = document.createElement("div");
-
-        div.className = `seat ${seat.status.toLowerCase()}`;
-        div.innerText = seat.number;
-
-        if (seat.status === "Disponible") {
-            div.onclick = () => reserveSeat(seat.id);
-        }
-
-        container.appendChild(div);
-    });
-}
-
-async function reserveSeat(seatId) {
-    try {
-        const res = await fetch(`${API}/seats/reserve/${seatId}`, {
-            method: "POST"
-        });
-
-        if (res.status === 409) {
-            alert("Otro usuario tomó este asiento 😢");
-        } else {
-            alert("Reservado!");
-        }
-
-        loadEvents();
-    } catch {
-        alert("Error");
-    }
-}
-
-// 🔥 AUDITORÍA
-async function loadAudit() {
-    const res = await fetch(`${API}/audit`);
-    const logs = await res.json();
-
-    const container = document.getElementById("audit");
-    container.innerHTML = "";
-
-    logs.forEach(log => {
-        const div = document.createElement("div");
-
-        div.innerText = `
-        ${log.timestamp} - ${log.action} - Seat ${log.seatId} - ${log.user}
+        card.innerHTML = `
+            <img src="https://picsum.photos/400/200?random=${e.id}">
+            <div class="card-content">
+                <h3>${e.name}</h3>
+                <p>${e.venue}</p>
+                <button class="btn" onclick="goToSeats(${e.id})">
+                    Comprar
+                </button>
+            </div>
         `;
 
-        container.appendChild(div);
+        container.appendChild(card);
     });
+}
+
+function goToSeats(eventId) {
+    window.location.href = `seats.html?eventId=${eventId}`;
 }
 
 loadEvents();

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mapa de Asientos</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+}
+
+header{
+    background:#020617;
+    padding:20px;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.container{
+    padding:30px;
+}
+
+h2{
+    margin-top:40px;
+    border-left:5px solid #22c55e;
+    padding-left:10px;
+}
+
+.sector{
+    display:grid;
+    grid-template-columns:repeat(10,1fr);
+    gap:10px;
+    margin-top:20px;
+}
+
+.seat{
+    height:45px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+.seat:hover{
+    transform:scale(1.08);
+}
+
+.disponible{
+    background:#22c55e;
+}
+
+.reservado{
+    background:#eab308;
+}
+
+.vendido{
+    background:#ef4444;
+    cursor:not-allowed;
+}
+
+.selected{
+    border:4px solid white;
+}
+
+.legend{
+    display:flex;
+    gap:20px;
+    margin-top:20px;
+}
+
+.legend div{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.box{
+    width:20px;
+    height:20px;
+    border-radius:5px;
+}
+
+.buy-btn{
+    margin-top:40px;
+    padding:15px 30px;
+    border:none;
+    border-radius:10px;
+    background:#3b82f6;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.buy-btn:hover{
+    background:#2563eb;
+}
+
+.backButton{
+    background:#334155;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    margin:20px;
+    font-size:16px;
+}
+
+.backButton:hover{
+    background:#475569;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+    🎟 Seleccioná tus asientos
+</header>
+
+<button class="backButton" onclick="volverInicio()">
+    ← Volver al inicio
+</button>
+
+<div class="container">
+
+<div class="legend">
+    <div><div class="box disponible"></div>Disponible</div>
+    <div><div class="box reservado"></div>Reservado</div>
+    <div><div class="box vendido"></div>Vendido</div>
+</div>
+
+<h2>Sector Platea</h2>
+<div id="platea" class="sector"></div>
+
+<h2>Sector Campo</h2>
+<div id="campo" class="sector"></div>
+
+<button class="buy-btn" onclick="continuarCompra()">
+    Continuar compra
+</button>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const eventId = params.get("eventId");
+
+const API =
+`http://localhost:5123/api/events/${eventId}/asiento`;
+
+let selectedSeats =
+JSON.parse(localStorage.getItem("selectedSeats"))
+|| [];
+
+async function loadSeats(){
+
+    try{
+
+        const res = await fetch(API);
+
+        if(!res.ok){
+
+            alert("Error conectando con la API");
+
+            return;
+        }
+
+        const seats = await res.json();
+
+        const platea =
+            document.getElementById("platea");
+
+        const campo =
+            document.getElementById("campo");
+
+        platea.innerHTML = "";
+        campo.innerHTML = "";
+
+        seats.forEach(seat => {
+
+            const div =
+                document.createElement("div");
+
+            div.classList.add("seat");
+
+            // COLORES
+            if(seat.status === "Disponible"){
+
+                div.classList.add("disponible");
+            }
+
+            else if(seat.status === "Reservado"){
+
+                div.classList.add("reservado");
+            }
+
+            else{
+
+                div.classList.add("vendido");
+            }
+
+            div.innerText = seat.number;
+
+            // SELECCIONADOS
+            if(selectedSeats.includes(seat.id)){
+
+                div.classList.add("selected");
+            }
+
+            // CLICK
+            if(seat.status === "Disponible"){
+
+                div.onclick = () => {
+
+                    if(selectedSeats.includes(seat.id)){
+
+                        selectedSeats =
+                            selectedSeats.filter(
+                                x => x !== seat.id
+                            );
+
+                        loadSeats();
+
+                        return;
+                    }
+
+                    if(selectedSeats.length >= 2){
+
+                        alert("Máximo 2 asientos");
+
+                        return;
+                    }
+
+                    selectedSeats.push(seat.id);
+
+                    loadSeats();
+                };
+            }
+
+            // SECTORES
+            if(seat.number <= 50){
+
+                platea.appendChild(div);
+            }
+
+            else{
+
+                campo.appendChild(div);
+            }
+
+        });
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("No se pudo conectar al servidor");
+    }
+}
+
+// CONTINUAR
+function continuarCompra(){
+
+    if(selectedSeats.length === 0){
+
+        alert("Seleccioná al menos un asiento");
+
+        return;
+    }
+
+    localStorage.setItem(
+        "selectedSeats",
+        JSON.stringify(selectedSeats)
+    );
+
+    window.location.href =
+        `checkout.html?eventId=${eventId}`;
+}
+
+// VOLVER
+function volverInicio(){
+
+    localStorage.removeItem("selectedSeats");
+
+    window.location.href = "index.html";
+}
+
+// INICIO
+loadSeats();
+
+setInterval(loadSeats,3000);
+
+</script>
+
+</body>
+</html>
