@@ -5,18 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=entradas.db"));
 
-// Controllers
 builder.Services.AddControllers();
 
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS (para frontend)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -25,33 +21,26 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader());
 });
 
-// Background Service
 builder.Services.AddHostedService<SeatExpirationService>();
 
 var app = builder.Build();
 
-// Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// CORS
 app.UseCors("AllowAll");
 
-// 👇 ESTO ES LO QUE TE FALTABA
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapControllers();
 
-
-// 🔥 SEED DE DATOS
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     db.Database.EnsureCreated();
 
-    // Evento
     if (!db.Events.Any())
     {
         db.Events.AddRange(
@@ -61,7 +50,6 @@ using (var scope = app.Services.CreateScope())
         db.SaveChanges();
     }
 
-    // Sectores
     if (!db.Sectors.Any())
     {
         db.Sectors.AddRange(
@@ -71,7 +59,6 @@ using (var scope = app.Services.CreateScope())
         db.SaveChanges();
     }
 
-    // Asientos
     if (!db.Seats.Any())
 {
     var eventos = db.Events.ToList();
@@ -94,7 +81,6 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges();
 
-        // 50 asientos Platea
         for (int i = 1; i <= 50; i++)
         {
             db.Seats.Add(new Seat
@@ -105,7 +91,6 @@ using (var scope = app.Services.CreateScope())
             });
         }
 
-        // 50 asientos Campo
         for (int i = 51; i <= 100; i++)
         {
             db.Seats.Add(new Seat
@@ -119,6 +104,23 @@ using (var scope = app.Services.CreateScope())
 
     db.SaveChanges();
 }
+}
+
+using(var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if(!context.Usuarios.Any())
+    {
+        context.Usuarios.AddRange(
+            new Usuario { Username="Martin", Password="123", Rol="User" },
+            new Usuario { Username="Joaquin", Password="123", Rol="User" },
+            new Usuario { Username="Ivanna", Password="123", Rol="User" },
+            new Usuario { Username="admin", Password="1212", Rol="Admin" }
+        );
+
+        context.SaveChanges();
+    }
 }
 
 app.Run();

@@ -3,6 +3,7 @@ using System;
 using EntradasApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntradasAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260427181904_AuditoriaDb")]
+    partial class AuditoriaDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -104,83 +107,6 @@ namespace EntradasAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sectors");
-                });
-
-            modelBuilder.Entity("EntradasApi.Models.Usuario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Rol")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Usuarios");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Apellido = "",
-                            Email = "admin@admin.com",
-                            Nombre = "Admin",
-                            Password = "1212",
-                            Rol = "Admin",
-                            Username = "admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Apellido = "",
-                            Email = "martin@mail.com",
-                            Nombre = "Martin",
-                            Password = "123",
-                            Rol = "User",
-                            Username = "martin"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Apellido = "",
-                            Email = "joaquin@mail.com",
-                            Nombre = "Joaquin",
-                            Password = "123",
-                            Rol = "User",
-                            Username = "joaquin"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Apellido = "",
-                            Email = "ivanna@mail.com",
-                            Nombre = "Ivanna",
-                            Password = "123",
-                            Rol = "User",
-                            Username = "ivanna"
-                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -103,33 +103,54 @@ button:hover{
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
+const user = JSON.parse(localStorage.getItem("user"));
 
-const eventId = params.get("eventId");
+const params =
+    new URLSearchParams(window.location.search);
+
+const eventId =
+    params.get("eventId");
+
+const rawSeats =
+    JSON.parse(
+        localStorage.getItem("selectedSeats") || "[]"
+    );
 
 const selectedSeats =
-    JSON.parse(localStorage.getItem("selectedSeats")) || [];
+    rawSeats.map(seat => ({
+
+        id:
+            typeof seat.id === "object"
+            ? seat.id.id
+            : seat.id,
+
+        number:
+            typeof seat.number === "object"
+            ? seat.number.number
+            : seat.number
+    }));
 
 // SI NO HAY ASIENTOS
 if(selectedSeats.length === 0){
-
     window.location.href = "index.html";
 }
 
 // MOSTRAR ASIENTOS
 document.getElementById("seats").innerText =
-    selectedSeats.join(", ");
+    selectedSeats.map(s => s.number).join(", ");
 
 
-// RESERVAR
 async function reservarAsientos(){
 
-    for(const seatId of selectedSeats){
+    for(const seat of selectedSeats){
 
         const response = await fetch(
-            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/reservar`,
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seat.id}/reservar`,
             {
-                method:"POST"
+                method:"POST",
+                headers:{
+                    "usuario": user.username
+                }
             }
         );
 
@@ -149,45 +170,41 @@ async function reservarAsientos(){
     return true;
 }
 
-
-// COMPRAR
 async function comprar(){
 
-    for(const seatId of selectedSeats){
+    if(!reservaLista){
+        alert("Esperá un segundo...");
+        return;
+    }
+
+    for(const seat of selectedSeats){
 
         const response = await fetch(
-            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/comprar`,
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seat.id}/comprar`,
             {
                 method:"POST",
-
                 headers:{
-                    "Content-Type":"application/json"
+                    "Content-Type":"application/json",
+                    "usuario": user.username
                 },
-
                 body:JSON.stringify({
-
-                    nombre:
-                        document.getElementById("nombre").value,
-
-                    apellido:
-                        document.getElementById("apellido").value,
-
-                    email:
-                        document.getElementById("email").value,
-
-                    tarjeta:
-                        document.getElementById("tarjeta").value
+                    nombre: document.getElementById("nombre").value,
+                    apellido: document.getElementById("apellido").value,
+                    email: document.getElementById("email").value,
+                    tarjeta: document.getElementById("tarjeta").value
                 })
             }
         );
 
         if(!response.ok){
 
-            alert("Uno de los asientos ya no están disponibles");
-
+            const error = await response.text();
+            alert(error);
             return;
         }
     }
+
+    clearInterval(refreshTimer);
 
     alert("Compra realizada correctamente");
 
@@ -196,16 +213,19 @@ async function comprar(){
     window.location.href = "index.html";
 }
 
-
-// VOLVER
 async function volver(){
 
-    for(const seatId of selectedSeats){
+    clearInterval(refreshTimer);
+
+    for(const seat of selectedSeats){
 
         await fetch(
-            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/cancelar`,
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seat.id}/cancelar`,
             {
-                method:"POST"
+                method:"POST",
+                headers:{
+                    "usuario": user.username
+                }
             }
         );
     }
@@ -224,11 +244,8 @@ const timer = setInterval(async () => {
 
     time--;
 
-    const minutes =
-        Math.floor(time / 60);
-
-    const seconds =
-        time % 60;
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
 
     document.getElementById("timer").innerText =
         `${minutes}:${seconds.toString().padStart(2,'0')}`;
@@ -236,15 +253,13 @@ const timer = setInterval(async () => {
     if(time <= 0){
 
         clearInterval(timer);
+        clearInterval(refreshTimer);
 
-        // LIBERAR
-        for(const seatId of selectedSeats){
+        for(const seat of selectedSeats){
 
             await fetch(
-                `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/cancelar`,
-                {
-                    method:"POST"
-                }
+                `http://localhost:5123/api/events/${eventId}/Asiento/${seat.id}/cancelar`,
+                { method:"POST" }
             );
         }
 
@@ -259,22 +274,33 @@ const timer = setInterval(async () => {
 },1000);
 
 
-// INICIAR RESERVA
-reservarAsientos();
-// MANTENER RESERVA VIVA
-setInterval(async () => {
+// REFRESH
+const refreshTimer = setInterval(async () => {
 
-    for(const seatId of selectedSeats){
+    for(const seat of selectedSeats){
 
         await fetch(
-            `http://localhost:5123/api/events/${eventId}/Asiento/${seatId}/refresh`,
-            {
-                method:"POST"
-            }
+            `http://localhost:5123/api/events/${eventId}/Asiento/${seat.id}/refresh`,
+            { method:"POST" }
         );
     }
 
 },30000);
+
+
+let reservaLista = false;
+
+window.onload = async () => {
+
+    const ok = await reservarAsientos();
+
+    if(!ok){
+        return;
+    }
+
+    reservaLista = true;
+};
+
 </script>
 
 </body>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<style>
+body{
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    width:350px;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+.link{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+}
+
+.link span{
+    color:#22c55e;
+    cursor:pointer;
+}
+
+.link span:hover{
+    text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Iniciar sesión</h2>
+
+<input id="user" placeholder="Usuario o Email">
+<input id="pass" placeholder="Password" type="password">
+
+<button onclick="login()">Ingresar</button>
+
+<div class="link">
+    ¿No tenés cuenta?
+    <span onclick="goRegister()">Registrarse</span>
+</div>
+
+</div>
+
+<script>
+
+async function login(){
+
+    const response = await fetch("http://localhost:5123/api/auth/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+            username: document.getElementById("user").value,
+            email: document.getElementById("user").value,
+            password: document.getElementById("pass").value
+        })
+    });
+
+    if(!response.ok){
+        alert("Login incorrecto");
+        return;
+    }
+
+    const data = await response.json();
+
+    localStorage.setItem("user", JSON.stringify(data));
+
+    window.location.href = "index.html";
+}
+
+function goRegister(){
+    window.location.href = "register.html";
+}
+
+</script>
+
+</body>
+</html>

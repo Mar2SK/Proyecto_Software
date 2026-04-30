@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pq1oifIbdFA=",
+  "dgSpecHash": "p0jUY942nO0=",
   "success": true,
-  "projectFilePath": "E:\\ticket-api\\EntradasAPI\\EntradasAPI.csproj",
+  "projectFilePath": "E:\\EntradasAPI\\EntradasAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\marti\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\marti\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.26\\microsoft.aspnetcore.openapi.8.0.26.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\ticket-api\\EntradasAPI\\EntradasAPI.csproj": {}
+    "E:\\EntradasAPI\\EntradasAPI.csproj": {}
   },
   "projects": {
-    "E:\\ticket-api\\EntradasAPI\\EntradasAPI.csproj": {
+    "E:\\EntradasAPI\\EntradasAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\ticket-api\\EntradasAPI\\EntradasAPI.csproj",
+        "projectUniqueName": "E:\\EntradasAPI\\EntradasAPI.csproj",
         "projectName": "EntradasAPI",
-        "projectPath": "E:\\ticket-api\\EntradasAPI\\EntradasAPI.csproj",
+        "projectPath": "E:\\EntradasAPI\\EntradasAPI.csproj",
         "packagesPath": "C:\\Users\\marti\\.nuget\\packages\\",
-        "outputPath": "E:\\ticket-api\\EntradasAPI\\obj\\",
+        "outputPath": "E:\\EntradasAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\marti\\AppData\\Roaming\\NuGet\\NuGet.Config"

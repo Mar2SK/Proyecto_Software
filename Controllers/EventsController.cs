@@ -5,7 +5,7 @@ using EntradasApi.Models;
 namespace EntradasApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/events")]
     public class EventController : ControllerBase
     {
         private readonly AppDbContext _context;

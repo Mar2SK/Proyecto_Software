@@ -37,24 +37,29 @@ namespace EntradasApi.Services
                 {
                     var minutes =
                         (DateTime.UtcNow -
-                        seat.ReservationTime.Value)
+                        seat.ReservationTime!.Value)
                         .TotalMinutes;
 
-                    // SOLO LIBERAR DESPUÉS DE 5 MIN
+                    // SOLO LIBERAR DESPUES DE 5 MIN
                     if (minutes >= 5)
                     {
                         seat.Status = "Disponible";
 
                         seat.ReservationTime = null;
 
-                        AuditoriaController.logs.Add(
+                        context.Auditorias.Add(
                             new Auditoria
                             {
-                                Accion = "Liberación",
+                                Accion = "Liberación automática",
 
                                 Descripcion =
-                                    $"Se liberó el asiento {seat.Number}"
+                                    $"Asiento: {seat.Number} | " +
+                                    $"Evento: {seat.EventId} | " +
+                                    $"Estado: DISPONIBLE | " +
+                                    $"Hora: {DateTime.Now}"
                             });
+
+                        context.SaveChanges();
                     }
                 }
 

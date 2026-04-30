@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro</title>
+
+<style>
+body{
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    width:350px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#16a34a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Crear cuenta</h2>
+
+<input id="nombre" placeholder="Nombre">
+<input id="apellido" placeholder="Apellido">
+<input id="username" placeholder="Usuario">
+<input id="email" placeholder="Email">
+<input id="password" placeholder="Password">
+
+<button onclick="register()">Registrarse</button>
+
+</div>
+
+<script>
+async function register(){
+
+    const response = await fetch("http://localhost:5123/api/auth/register", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+            nombre: document.getElementById("nombre").value,
+            apellido: document.getElementById("apellido").value,
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+    });
+
+    if(!response.ok){
+        alert("Error al registrarse");
+        return;
+    }
+
+    alert("Cuenta creada");
+
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

@@ -13,6 +13,8 @@ namespace EntradasApi.Models
         public DateTime? ReservationTime { get; set; }
         
         public string Status { get; set; } = "Disponible";
+
+        public int Version { get; set; }
         
     }
 }

@@ -18,8 +18,6 @@ body{
     color:white;
 }
 
-/* NAVBAR */
-
 nav{
     height:80px;
     background:#0f172a;
@@ -57,8 +55,6 @@ nav{
     transform:translateY(-2px);
 }
 
-/* HERO */
-
 .hero{
     padding:60px;
 }
@@ -72,8 +68,6 @@ nav{
     color:#94a3b8;
     font-size:20px;
 }
-
-/* CARDS */
 
 .events{
     padding:0 60px 60px;
@@ -156,6 +150,16 @@ nav{
     font-weight:bold;
 }
 
+.userInfo{
+    display:flex;
+    align-items:center;
+    padding:12px 18px;
+    border-radius:10px;
+    background:#020617;
+    color:#22c55e;
+    font-weight:bold;
+    font-size:15px;
+}
 </style>
 
 </head>
@@ -167,13 +171,7 @@ nav{
     🎟 Entradas Premium
 </div>
 
-<div class="menu">
-
-<button onclick="goAuditoria()">
-    Auditoría
-</button>
-
-</div>
+<div class="menu" id="menu"></div>
 
 </nav>
 
@@ -189,74 +187,74 @@ Comprá entradas para los mejores shows del mundo.
 
 <section class="events">
 
-<!-- DUKI -->
-
 <div class="card">
-
-<div class="tag">
-    HOT
-</div>
-
+<div class="tag">HOT</div>
 <img src="https://enagenda.com.ar/uploads/noticias/5/2025/06/20250602181554_duki-x-irishsuarez-036.jpg">
 
 <div class="overlay">
-
 <h2>Duki World Tour</h2>
-
-<p>
-Movistar Arena • Buenos Aires • 14 Nov
-</p>
-
-<button onclick="goEvent(1)">
-    Comprar entradas
-</button>
-
+<p>Movistar Arena • Buenos Aires • 24 de Junio</p>
+<button onclick="goEvent(1)">Comprar entradas</button>
 </div>
-
 </div>
-
-<!-- BOCA - RIVER -->
 
 <div class="card">
-
-<div class="tag">
-    SOLD FAST
-</div>
-
+<div class="tag">SOLD FAST</div>
 <img src="https://www.lanacion.com.ar/resizer/v2/la-durisima-patada-de-marcos-rojo-que-derivo-en-GVH4JYH6PFBY7HL6YUXSDWR7OE.JPG?auth=452b2d8910b20b48db97c01a0bf265ee4afd8ade068e79f953376ad023b01b76&width=1200&height=800&quality=70&smart=true">
 
 <div class="overlay">
-
 <h2>BOCA vs RIVER</h2>
-
-<p>
-River Plate • Buenos Aires • 22 Nov
-</p>
-
-<button onclick="goEvent(2)">
-    Comprar entradas
-</button>
-
+<p>River Plate • Buenos Aires • 26 de Junio</p>
+<button onclick="goEvent(2)">Comprar entradas</button>
 </div>
-
 </div>
 
 </section>
 
 <script>
 
+const user = JSON.parse(localStorage.getItem("user"));
+const menu = document.getElementById("menu");
+
+// MENU DINÁMICO SEGÚN ROL
+
+if(!user){
+    menu.innerHTML = `
+        <button onclick="window.location.href='login.html'">
+            Ingresar
+        </button>
+        <button onclick="window.location.href='register.html'">
+            Registrarse
+        </button>
+    `;
+}
+else if(user.rol === "User"){
+    menu.innerHTML = `
+        <div class="userInfo">Hola ${user.username}</div>
+        <button onclick="logout()">Salir</button>
+    `;
+}
+else if(user.rol === "Admin"){
+    menu.innerHTML = `
+        <div class="userInfo">Hola ${user.username}</div>
+        <button onclick="goAuditoria()">Auditoría</button>
+        <button onclick="window.location.href='admin.html'">Admin</button>
+        <button onclick="logout()">Salir</button>
+    `;
+}
+
 function goEvent(id){
-
     localStorage.removeItem("selectedSeats");
-
-    window.location.href =
-        `seats.html?eventId=${id}`;
+    window.location.href = `seats.html?eventId=${id}`;
 }
 
 function goAuditoria(){
+    window.location.href = "auditoria.html";
+}
 
-    window.location.href =
-        "auditoria.html";
+function logout(){
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
 }
 
 </script>

@@ -60,7 +60,7 @@ td{
 }
 
 .reserva{
-    color:#facc15;
+    color:#facc15; 
     font-weight:bold;
 }
 
@@ -69,8 +69,13 @@ td{
     font-weight:bold;
 }
 
+.cancelacion{
+    color:#ef4444; 
+    font-weight:bold;
+}
+
 .liberacion{
-    color:#ef4444;
+    color:#3b82f6;
     font-weight:bold;
 }
 
@@ -105,11 +110,16 @@ td{
 </table>
 
 <script>
+    const user = JSON.parse(localStorage.getItem("user"));
 
-async function loadAuditoria(){
+    if(!user || user.rol !== "Admin"){
+        alert("No autorizado");
+        window.location.href = "index.html";
+    }
 
-    const response =
-        await fetch("http://localhost:5123/api/Auditoria");
+    async function loadAuditoria(){
+
+    const response = await fetch("http://localhost:5123/api/Auditoria");
 
     const logs = await response.json();
 
@@ -118,18 +128,22 @@ async function loadAuditoria(){
 
     tbody.innerHTML = "";
 
-    logs.reverse().forEach(log => {
+    logs.forEach(log => {
 
         let clase = "";
 
-        if(log.accion === "Reserva")
+        if(log.accion === "Reserva"){
             clase = "reserva";
-
-        if(log.accion === "Compra")
+        }
+        else if(log.accion === "Compra"){
             clase = "compra";
-
-        if(log.accion === "Liberación")
+        }
+        else if(log.accion === "Cancelación"){
+            clase = "cancelacion";
+        }
+        else if(log.accion === "Liberación automática"){
             clase = "liberacion";
+        }
 
         tbody.innerHTML += `
             <tr>
@@ -137,33 +151,26 @@ async function loadAuditoria(){
                     ${log.accion}
                 </td>
 
-                <td style="line-height:1.6;">
-                    ${log.descripcion
-                    .replace("|","<br>")
-                    .replace("|","<br>")
-                    .replace("|","<br>")
-                    .replace("|","<br>")}
+                <td>
+                    ${log.descripcion}
                 </td>
 
                 <td>
-                    ${new Date(log.fecha)
-                        .toLocaleString()}
+                    ${new Date(log.fecha).toLocaleString()}
                 </td>
             </tr>
         `;
     });
-}
+    }
 
-function volver(){
+    function volver(){
+        window.location.href = "index.html";
+    }
 
-    window.location.href = "index.html";
-}
+    loadAuditoria();
 
-loadAuditoria();
-
-setInterval(loadAuditoria,3000);
+    setInterval(loadAuditoria,1000);
 
 </script>
-
 </body>
 </html>

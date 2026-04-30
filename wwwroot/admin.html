@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel Admin</title>
+
+<style>
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+}
+
+header{
+    background:#020617;
+    padding:20px;
+    text-align:center;
+    font-size:28px;
+    position: relative; 
+}
+
+.container{
+    padding:30px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+.logout{
+    background:#ef4444;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    ⚙️ Panel Administrador
+    <button class="logout" onclick="logout()">Cerrar sesión</button>
+</header>
+
+<button onclick="irInicio()" style="margin:20px;">← Inicio</button>
+
+<div class="container">
+
+<h2>Eventos</h2>
+
+<div id="events"></div>
+
+<button onclick="crearEvento()">➕ Crear Evento</button>
+
+</div>
+
+<script>
+// PROTECCION
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user || user.rol !== "Admin"){
+    alert("No autorizado");
+    window.location.href = "index.html";
+}
+
+// CARGAR EVENTOS
+async function loadEvents(){
+    const res = await fetch("http://localhost:5123/api/event");
+    const events = await res.json();
+
+    const container = document.getElementById("events");
+    container.innerHTML = "";
+
+    events.forEach(e => {
+        container.innerHTML += `
+            <div class="card">
+                <h3>${e.name}</h3>
+                <p>${e.venue}</p>
+
+                <button onclick="editarEvento(${e.id})">
+                    ✏️ Editar
+                </button>
+
+                <button onclick="agregarButacas(${e.id})">
+                    🎟 Agregar butacas
+                </button>
+            </div>
+        `;
+    });
+}
+
+// BOTONES
+function crearEvento(){
+    alert("Crear evento (pendiente)");
+}
+
+function editarEvento(id){
+    alert("Editar evento " + id);
+}
+
+function agregarButacas(id){
+    alert("Agregar butacas a evento " + id);
+}
+
+function logout(){
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+}
+
+function irInicio(){
+    window.location.href = "index.html"; 
+}
+
+loadEvents();
+</script>
+
+</body>
+</html>
