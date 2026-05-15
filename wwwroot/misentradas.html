@@ -135,13 +135,17 @@ const user =
         localStorage.getItem("user")
     );
 
+const usuarioActual =
+    JSON.parse(
+        localStorage.getItem("user")
+    );
+
+const key =
+    `tickets_${usuarioActual.username}`;
+
 const tickets =
     JSON.parse(
-
-        localStorage.getItem(
-            `tickets_${user.username}`
-        )
-
+        localStorage.getItem(key)
     ) || [];
 
 const container =

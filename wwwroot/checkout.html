@@ -282,10 +282,12 @@ async function comprar(){
             `http://localhost:5123/api/events/${eventId}/asientos/${seat.id}/comprar`,
             {
                 method:"POST",
+
                 headers:{
                     "Content-Type":"application/json",
                     "usuario": user.username
                 },
+
                 body: JSON.stringify({
 
                     nombre:nombre,
@@ -346,13 +348,19 @@ async function comprar(){
             .toLocaleString()
     };
 
-    const tickets =
+    // GUARDAR TICKETS POR USUARIO
+
+    const usuarioActual =
         JSON.parse(
+            localStorage.getItem("user")
+        );
 
-            localStorage.getItem(
-                `tickets_${user.username}`
-            )
+    const key =
+        `tickets_${usuarioActual.username}`;
 
+    let tickets =
+        JSON.parse(
+            localStorage.getItem(key)
         ) || [];
 
     tickets.push(
@@ -360,10 +368,15 @@ async function comprar(){
     );
 
     localStorage.setItem(
-
-        `tickets_${user.username}`,
-
+        key,
         JSON.stringify(tickets)
+    );
+
+    // TICKET ACTUAL
+
+    localStorage.setItem(
+        "ticketData",
+        JSON.stringify(nuevoTicket)
     );
 
     localStorage.removeItem(
