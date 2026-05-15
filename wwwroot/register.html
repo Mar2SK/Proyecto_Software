@@ -65,29 +65,117 @@ button:hover{
 </div>
 
 <script>
+
 async function register(){
 
-    const response = await fetch("http://localhost:5123/api/auth/register", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-            nombre: document.getElementById("nombre").value,
-            apellido: document.getElementById("apellido").value,
-            username: document.getElementById("username").value,
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value
-        })
-    });
+    const nombre =
+        document.getElementById(
+            "nombre"
+        ).value.trim();
 
-    if(!response.ok){
-        alert("Error al registrarse");
+    const apellido =
+        document.getElementById(
+            "apellido"
+        ).value.trim();
+
+    const username =
+        document.getElementById(
+            "username"
+        ).value.trim();
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value.trim();
+
+    // VALIDAR CAMPOS
+
+    if(
+        !nombre ||
+        !apellido ||
+        !username ||
+        !email ||
+        !password
+    ){
+
+        alert(
+            "Completa todos los campos"
+        );
+
         return;
     }
 
-    alert("Cuenta creada");
+    // VALIDAR EMAIL
 
-    window.location.href = "login.html";
+    if(
+        !email.includes("@")
+    ){
+
+        alert(
+            "Ingresa un email válido"
+        );
+
+        return;
+    }
+
+    // VALIDAR PASSWORD
+
+    if(
+        password.length < 3
+    ){
+
+        alert(
+            "La contraseña debe tener al menos 3 caracteres"
+        );
+
+        return;
+    }
+
+    const response =
+        await fetch(
+            "http://localhost:5123/api/auth/register",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body: JSON.stringify({
+
+                    nombre,
+                    apellido,
+                    username,
+                    email,
+                    password
+                })
+            });
+
+    // ERROR BACKEND
+
+    if(!response.ok){
+
+        const error =
+            await response.text();
+
+        alert(error);
+
+        return;
+    }
+
+    alert(
+        "Cuenta creada correctamente"
+    );
+
+    window.location.href =
+        "login.html";
 }
+
 </script>
 
 </body>

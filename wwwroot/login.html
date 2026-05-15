@@ -101,7 +101,7 @@ async function login(){
     });
 
     if(!response.ok){
-        alert("Login incorrecto");
+        showMessage("Credenciales incorrectas", false);
         return;
     }
 

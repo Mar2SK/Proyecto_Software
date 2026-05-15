@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EntradasApi.Models
 {
     public class Seat
@@ -14,7 +16,7 @@ namespace EntradasApi.Models
         
         public string Status { get; set; } = "Disponible";
 
-        public int Version { get; set; }
-        
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
     }
 }

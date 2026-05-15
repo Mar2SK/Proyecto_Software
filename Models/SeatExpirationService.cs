@@ -50,13 +50,17 @@ namespace EntradasApi.Services
                         context.Auditorias.Add(
                             new Auditoria
                             {
+                                Usuario = "SYSTEM",
+
                                 Accion = "Liberación automática",
 
                                 Descripcion =
                                     $"Asiento: {seat.Number} | " +
                                     $"Evento: {seat.EventId} | " +
                                     $"Estado: DISPONIBLE | " +
-                                    $"Hora: {DateTime.Now}"
+                                    $"Hora: {DateTime.Now}",
+
+                                Fecha = DateTime.Now
                             });
 
                         context.SaveChanges();

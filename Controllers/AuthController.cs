@@ -29,11 +29,39 @@ namespace EntradasApi.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] Usuario nuevo)
+        public IActionResult Register(
+            [FromBody] Usuario nuevo)
         {
+            // VALIDAR USUARIO
+            var usuarioExiste =
+                _context.Usuarios.Any(u =>
+                    u.Username == nuevo.Username);
+
+            if(usuarioExiste)
+            {
+                return BadRequest(
+                    "El usuario ya existe"
+                );
+            }
+
+            // VALIDAR EMAIL
+            var emailExiste =
+                _context.Usuarios.Any(u =>
+                    u.Email == nuevo.Email);
+
+            if(emailExiste)
+            {
+                return BadRequest(
+                    "El email ya está registrado"
+                );
+            }
+
+            // ROL DEFAULT
             nuevo.Rol = "User";
 
+            // GUARDAR USUARIO
             _context.Usuarios.Add(nuevo);
+
             _context.SaveChanges();
 
             return Ok(nuevo);

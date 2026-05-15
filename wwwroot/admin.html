@@ -5,6 +5,7 @@
 <title>Panel Admin</title>
 
 <style>
+
 body{
     margin:0;
     background:#0f172a;
@@ -17,7 +18,7 @@ header{
     padding:20px;
     text-align:center;
     font-size:28px;
-    position: relative; 
+    position:relative;
 }
 
 .container{
@@ -27,8 +28,16 @@ header{
 .card{
     background:#1e293b;
     padding:20px;
-    border-radius:15px;
+    border-radius:20px;
     margin-bottom:20px;
+}
+
+.card img{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:15px;
 }
 
 button{
@@ -39,6 +48,7 @@ button{
     color:white;
     cursor:pointer;
     margin-top:10px;
+    font-size:16px;
 }
 
 button:hover{
@@ -47,92 +57,579 @@ button:hover{
 
 .logout{
     background:#ef4444;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 0;
+    position:absolute;
+    right:20px;
+    top:50%;
+    transform:translateY(-50%);
 }
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modalContent{
+    width:500px;
+    background:#1e293b;
+    border-radius:25px;
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.modalContent input{
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#0f172a;
+    color:white;
+    font-size:16px;
+}
+
+.modalButtons{
+    display:flex;
+    gap:10px;
+}
+
+.cancel{
+    background:#ef4444;
+}
+
+.sectorBox{
+    background:#0f172a;
+    padding:15px;
+    border-radius:15px;
+}
+
+.delete-btn{
+    background:#ef4444;
+    margin-left:10px;
+}
+
+.delete-btn:hover{
+    background:#dc2626;
+}
+
+@media(max-width:768px){
+
+    header{
+        font-size:22px;
+        padding:15px;
+    }
+
+    .logout{
+        position:static;
+        transform:none;
+        margin-top:15px;
+    }
+
+    .container{
+        padding:15px;
+    }
+
+    .modalContent{
+        width:90%;
+        padding:20px;
+    }
+
+    .card img{
+        height:180px;
+    }
+
+    .modalButtons{
+        flex-direction:column;
+    }
+
+    .modalButtons button{
+        width:100%;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
+
     ⚙️ Panel Administrador
-    <button class="logout" onclick="logout()">Cerrar sesión</button>
+
+    <button
+        class="logout"
+        onclick="logout()">
+
+        Cerrar sesión
+
+    </button>
+
 </header>
 
-<button onclick="irInicio()" style="margin:20px;">← Inicio</button>
+<button
+    onclick="irInicio()"
+    style="margin:20px;"
+>
+    ← Inicio
+</button>
 
 <div class="container">
 
-<h2>Eventos</h2>
+    <h2>Eventos</h2>
 
-<div id="events"></div>
+    <div id="events"></div>
 
-<button onclick="crearEvento()">➕ Crear Evento</button>
+    <button onclick="abrirModal()">
+        ➕ Crear Evento
+    </button>
+
+</div>
+
+
+<div id="modal" class="modal">
+
+    <div class="modalContent">
+
+        <h2 id="modalTitle">
+            Crear Evento
+        </h2>
+
+        <input
+            type="text"
+            id="eventName"
+            placeholder="Nombre del evento"
+        >
+
+        <input
+            type="text"
+            id="eventVenue"
+            placeholder="Lugar y fecha"
+        >
+
+        <div class="sectorBox">
+
+            <h3>Platea</h3>
+
+            <input
+                type="number"
+                id="plateaSeats"
+                placeholder="Cantidad de butacas"
+            >
+
+        </div>
+
+        <div class="sectorBox">
+
+            <h3>Campo</h3>
+
+            <input
+                type="number"
+                id="campoSeats"
+                placeholder="Cantidad de butacas"
+            >
+
+        </div>
+
+        <img
+            id="previewImage"
+            style="
+                width:100%;
+                height:180px;
+                object-fit:cover;
+                border-radius:15px;
+                margin-bottom:20px;
+                display:none;
+            ">
+
+        <input
+            type="file"
+            id="eventImage"
+            accept="image/*"
+        >
+
+        <div class="modalButtons">
+
+            <button onclick="guardarEvento()">
+                Guardar
+            </button>
+
+            <button
+                class="cancel"
+                onclick="cerrarModal()"
+            >
+                Cancelar
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
 <script>
-// PROTECCION
-const user = JSON.parse(localStorage.getItem("user"));
 
-if(!user || user.rol !== "Admin"){
-    alert("No autorizado");
-    window.location.href = "index.html";
+function showMessage(text, success = true){
+
+    const div =
+        document.createElement("div");
+
+    div.innerText = text;
+
+    div.style.position = "fixed";
+    div.style.top = "20px";
+    div.style.right = "20px";
+    div.style.padding = "15px 20px";
+    div.style.borderRadius = "12px";
+    div.style.fontWeight = "bold";
+    div.style.zIndex = "9999";
+
+    div.style.background =
+        success
+        ? "#22c55e"
+        : "#ef4444";
+
+    div.style.color = "white";
+
+    document.body.appendChild(div);
+
+    setTimeout(() => {
+        div.remove();
+    },3000);
 }
 
-// CARGAR EVENTOS
-async function loadEvents(){
-    const res = await fetch("http://localhost:5123/api/event");
-    const events = await res.json();
+const user =
+    JSON.parse(
+        localStorage.getItem("user")
+    );
 
-    const container = document.getElementById("events");
+if(!user || user.rol !== "Admin"){
+
+    window.location.href =
+        "index.html";
+}
+
+let editingEventId = null;
+
+// LOAD EVENTS
+async function loadEvents(){
+
+    const response =
+        await fetch(
+            "http://localhost:5123/api/events"
+        );
+
+    const events =
+        await response.json();
+
+    const container =
+        document.getElementById("events");
+
     container.innerHTML = "";
 
-    events.forEach(e => {
-        container.innerHTML += `
-            <div class="card">
-                <h3>${e.name}</h3>
-                <p>${e.venue}</p>
+    events.forEach(event => {
 
-                <button onclick="editarEvento(${e.id})">
+        container.innerHTML += `
+
+            <div class="card">
+
+                <img
+                    src="${
+                        event.imageUrl.startsWith("http")
+                        ? event.imageUrl
+                        : `http://localhost:5123${event.imageUrl}`
+                    }"
+                >
+
+                <h2>${event.name}</h2>
+
+                <p>${event.venue}</p>
+
+                <button onclick="editarEvento(${event.id})">
                     ✏️ Editar
                 </button>
 
-                <button onclick="agregarButacas(${e.id})">
-                    🎟 Agregar butacas
+                <button
+                    onclick="eliminarEvento(${event.id})"
+                    class="delete-btn">
+
+                    Eliminar
+
                 </button>
+
             </div>
         `;
     });
 }
 
-// BOTONES
-function crearEvento(){
-    alert("Crear evento (pendiente)");
+// MODAL
+function abrirModal(){
+
+    editingEventId = null;
+
+    limpiarModal();
+
+    document.getElementById(
+        "modalTitle"
+    ).innerText =
+        "Crear Evento";
+
+    document.getElementById(
+        "modal"
+    ).style.display =
+        "flex";
 }
 
-function editarEvento(id){
-    alert("Editar evento " + id);
+function cerrarModal(){
+
+    document.getElementById(
+        "modal"
+    ).style.display =
+        "none";
 }
 
-function agregarButacas(id){
-    alert("Agregar butacas a evento " + id);
+function limpiarModal(){
+
+    document.getElementById(
+        "eventName"
+    ).value = "";
+
+    document.getElementById(
+        "eventVenue"
+    ).value = "";
+
+    document.getElementById(
+        "plateaSeats"
+    ).value = "";
+
+    document.getElementById(
+        "campoSeats"
+    ).value = "";
+
+    document.getElementById(
+        "eventImage"
+    ).value = "";
+
+    document.getElementById(
+        "previewImage"
+    ).style.display =
+        "none";
 }
 
+// EDITAR
+async function editarEvento(id){
+
+    editingEventId = id;
+
+    const response =
+        await fetch(
+            "http://localhost:5123/api/events"
+        );
+
+    const events =
+        await response.json();
+
+    const event =
+        events.find(e => e.id == id);
+
+    document.getElementById(
+        "modalTitle"
+    ).innerText =
+        "Editar Evento";
+
+    document.getElementById(
+        "eventName"
+    ).value =
+        event.name;
+
+    document.getElementById(
+        "eventVenue"
+    ).value =
+        event.venue;
+
+    document.getElementById(
+        "previewImage"
+    ).src =
+        event.imageUrl.startsWith("http")
+        ? event.imageUrl
+        : `http://localhost:5123${event.imageUrl}`;
+
+    document.getElementById(
+        "previewImage"
+    ).style.display =
+        "block";
+
+    document.getElementById(
+        "modal"
+    ).style.display =
+        "flex";
+}
+
+// GUARDAR
+async function guardarEvento(){
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "name",
+        document.getElementById(
+            "eventName"
+        ).value
+    );
+
+    formData.append(
+        "venue",
+        document.getElementById(
+            "eventVenue"
+        ).value
+    );
+
+    const plateaSeats =
+        document.getElementById(
+            "plateaSeats"
+        ).value;
+
+    const campoSeats =
+        document.getElementById(
+            "campoSeats"
+        ).value;
+
+    if(plateaSeats.trim() !== "")
+    {
+        formData.append(
+            "plateaSeats",
+            plateaSeats
+        );
+    }
+
+    if(campoSeats.trim() !== "")
+    {
+        formData.append(
+            "campoSeats",
+            campoSeats
+        );
+    }
+
+    const file =
+        document.getElementById(
+            "eventImage"
+        ).files[0];
+
+    if(file){
+
+        formData.append(
+            "image",
+            file
+        );
+    }
+
+    let url =
+        "http://localhost:5123/api/events";
+
+    let method = "POST";
+
+    if(editingEventId){
+
+        url += `/${editingEventId}`;
+
+        method = "PUT";
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: method,
+                    body: formData
+                });
+
+        if(response.ok){
+
+            cerrarModal();
+
+            loadEvents();
+
+            showMessage(
+                "Evento guardado correctamente"
+            );
+        }
+        else{
+
+            const error =
+                await response.text();
+
+            let mensaje = "Error inesperado";
+
+            if(error.includes("image")){
+                mensaje = "Debes seleccionar una imagen";
+            }            
+            else if(error.includes("name")){
+                mensaje = "El nombre del evento es obligatorio";
+            }
+            else if(error.includes("venue")){
+                mensaje = "El lugar del evento es obligatorio";
+            }
+            else{
+                mensaje = error;
+            }
+
+            showMessage(mensaje, false);
+
+            console.log(error);
+        }
+    }
+    catch(error){
+
+        console.log(error);
+
+        showMessage(
+            "Error conectando con el servidor",
+            false
+        );
+    }
+}
+
+// ELIMINAR
+async function eliminarEvento(id){
+
+    const ok =
+        confirm("¿Eliminar evento?");
+
+    if(!ok) return;
+
+    await fetch(
+        `http://localhost:5123/api/events/${id}`,
+        {
+            method:"DELETE"
+        }
+    );
+
+    loadEvents();
+}
+
+// OTROS
 function logout(){
+
     localStorage.removeItem("user");
-    window.location.href = "index.html";
+
+    window.location.href =
+        "index.html";
 }
 
 function irInicio(){
-    window.location.href = "index.html"; 
+
+    window.location.href =
+        "index.html";
 }
 
 loadEvents();
+
 </script>
 
 </body>

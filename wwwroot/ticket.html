@@ -14,50 +14,86 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    min-height:100vh;
+    padding:20px;
 }
 
 .ticket{
-    width:450px;
+
+    width:420px;
+
     background:#1e293b;
+
     border-radius:25px;
+
     overflow:hidden;
-    box-shadow:0 0 30px rgba(0,0,0,0.5);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.4);
 }
 
-.header{
-    background:linear-gradient(135deg,#7c3aed,#2563eb);
-    padding:30px;
-    text-align:center;
-}
+.banner{
 
-.header h1{
-    margin:0;
-    font-size:32px;
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
 }
 
 .content{
     padding:30px;
 }
 
-.row{
-    margin-bottom:20px;
+h1{
+    margin:0;
+    font-size:32px;
 }
 
-.label{
-    color:#94a3b8;
-    font-size:14px;
+h2{
+    margin-top:25px;
 }
 
-.value{
-    font-size:20px;
-    margin-top:5px;
+p{
+    color:#cbd5e1;
+}
+
+.divider{
+    height:1px;
+    background:#334155;
+    margin:25px 0;
+}
+
+.seat{
+
+    background:#0f172a;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    margin-bottom:10px;
+
+    font-size:18px;
 }
 
 .qr{
+
     margin-top:30px;
+
     text-align:center;
-    font-size:80px;
+
+    font-size:28px;
+
+    letter-spacing:5px;
+
+    background:white;
+
+    color:black;
+
+    padding:20px;
+
+    border-radius:20px;
 }
 
 .button{
@@ -76,6 +112,17 @@ body{
     background:#16a34a;
 }
 
+@media(max-width:768px){
+
+    .ticket{
+        width:100%;
+    }
+
+    h1{
+        font-size:26px;
+    }
+}
+
 </style>
 
 </head>
@@ -83,86 +130,127 @@ body{
 
 <div class="ticket">
 
-<div class="header">
-    <h1>🎟 Ticket Confirmado</h1>
-</div>
+    <img
+    id="eventImage"
+    class="banner">
 
-<div class="content">
+    <div class="content">
 
-<div class="row">
-    <div class="label">Comprador</div>
-    <div class="value" id="nombre"></div>
-</div>
+        <h1 id="eventName"></h1>
 
-<div class="row">
-    <div class="label">Email</div>
-    <div class="value" id="email"></div>
-</div>
+        <p id="venue"></p>
 
-<div class="row">
-    <div class="label">Evento</div>
-    <div class="value" id="evento"></div>
-</div>
+        <div class="divider"></div>
 
-<div class="row">
-    <div class="label">Asientos</div>
-    <div class="value" id="asientos"></div>
-</div>
+        <h2>🎟 Entradas</h2>
 
-<div class="row">
-    <div class="label">Fecha</div>
-    <div class="value" id="fecha"></div>
-</div>
+        <div id="seatList"></div>
 
-<div class="qr">
-    🎫
-</div>
+        <div class="divider"></div>
 
-<button class="button"
-onclick="volver()">
+        <div class="buyer">
+            <p id="buyer"></p>
+            <p id="email"></p>
+            <p id="fecha"></p>
+        </div>
 
-Volver al inicio
+        <div class="qr">
 
-</button>
+            <div style="font-size:90px;">
+             🎟
+            </div>
 
-</div>
+            <div id="fakeQr" style="margin-top:10px;"> </div>
+        </div>
+
+        <button
+            class="button"
+            onclick="volver()">
+
+            Volver al inicio
+
+        </button>
+
+    </div>
 
 </div>
 
 <script>
 
 const data =
-    JSON.parse(localStorage.getItem("ticketData"));
+    JSON.parse(
+        localStorage.getItem(
+            "ticketData"
+        )
+    );
 
 if(!data){
 
-    window.location.href = "/index.html";
+    window.location.href =
+        "index.html";
 }
 
-document.getElementById("nombre").innerText =
+document.getElementById(
+    "eventImage"
+).src =
+    data.image;
+
+document.getElementById(
+    "eventName"
+).innerText =
+    data.eventName;
+
+document.getElementById(
+    "venue"
+).innerText =
+    data.venue;
+
+document.getElementById(
+    "buyer"
+).innerText =
     `${data.nombre} ${data.apellido}`;
 
-document.getElementById("email").innerText =
+document.getElementById(
+    "email"
+).innerText =
     data.email;
 
-document.getElementById("evento").innerText =
-    data.eventId == 1
-    ? "Duki World Tour"
-    : "Coldplay Live";
-
-document.getElementById("asientos").innerText =
-    data.seats.join(", ");
-
-document.getElementById("fecha").innerText =
+document.getElementById(
+    "fecha"
+).innerText =
     data.fecha;
+
+const seatList =
+    document.getElementById(
+        "seatList"
+    );
+
+data.seats.forEach(seat => {
+
+    seatList.innerHTML += `
+        <div class="seat">
+            Asiento ${seat}
+        </div>
+    `;
+});
 
 function volver(){
 
-    localStorage.removeItem("ticketData");
+    localStorage.removeItem(
+        "ticketData"
+    );
 
-    window.location.href = "index.html";
+    window.location.href =
+        "index.html";
 }
 
+document.getElementById(
+    "fakeQr"
+).innerText =
+    "QR-" +
+    Math.floor(
+        Math.random() * 999999
+    );
 </script>
 
 </body>

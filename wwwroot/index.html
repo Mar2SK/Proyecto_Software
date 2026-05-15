@@ -160,6 +160,104 @@ nav{
     font-weight:bold;
     font-size:15px;
 }
+
+.welcome{
+    padding:12px 20px;
+    border-radius:14px;
+
+    background:linear-gradient(
+        135deg,
+        #22c55e,
+        #16a34a
+    );
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:15px;
+
+    letter-spacing:0.5px;
+
+    box-shadow:
+        0 4px 15px rgba(34,197,94,0.3);
+
+    display:flex;
+    align-items:center;
+
+    @media(max-width:768px){
+
+    nav{
+        flex-direction:column;
+        height:auto;
+        padding:20px;
+        gap:20px;
+    }
+
+    .hero{
+        padding:30px 20px;
+        text-align:center;
+    }
+
+    .hero h1{
+        font-size:36px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    .events{
+        grid-template-columns:1fr;
+        padding:20px;
+    }
+
+    .card{
+        height:420px;
+    }
+
+    .overlay h2{
+        font-size:28px;
+    }
+
+    .overlay button{
+        width:100%;
+    }
+
+    .menu{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+}
+
+.available{
+
+    margin-top:12px;
+
+    margin-bottom:12px;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    color:#22c55e;
+
+    background:rgba(34,197,94,0.12);
+
+    padding:8px 12px;
+
+    border-radius:12px;
+
+    display:inline-block;
+}
+
+button:disabled{
+
+    background:#475569;
+
+    cursor:not-allowed;
+}
+}
 </style>
 
 </head>
@@ -185,77 +283,294 @@ Comprá entradas para los mejores shows del mundo.
 
 </section>
 
-<section class="events">
-
-<div class="card">
-<div class="tag">HOT</div>
-<img src="https://enagenda.com.ar/uploads/noticias/5/2025/06/20250602181554_duki-x-irishsuarez-036.jpg">
-
-<div class="overlay">
-<h2>Duki World Tour</h2>
-<p>Movistar Arena • Buenos Aires • 24 de Junio</p>
-<button onclick="goEvent(1)">Comprar entradas</button>
-</div>
-</div>
-
-<div class="card">
-<div class="tag">SOLD FAST</div>
-<img src="https://www.lanacion.com.ar/resizer/v2/la-durisima-patada-de-marcos-rojo-que-derivo-en-GVH4JYH6PFBY7HL6YUXSDWR7OE.JPG?auth=452b2d8910b20b48db97c01a0bf265ee4afd8ade068e79f953376ad023b01b76&width=1200&height=800&quality=70&smart=true">
-
-<div class="overlay">
-<h2>BOCA vs RIVER</h2>
-<p>River Plate • Buenos Aires • 26 de Junio</p>
-<button onclick="goEvent(2)">Comprar entradas</button>
-</div>
-</div>
-
+<section class="events" id="events">
 </section>
 
 <script>
 
-const user = JSON.parse(localStorage.getItem("user"));
-const menu = document.getElementById("menu");
+function showMessage(text, success = true){
 
-// MENU DINÁMICO SEGÚN ROL
+    const div =
+        document.createElement("div");
+
+    div.innerText = text;
+
+    div.style.position = "fixed";
+
+    div.style.top = "20px";
+
+    div.style.right = "20px";
+
+    div.style.padding = "15px 20px";
+
+    div.style.borderRadius = "12px";
+
+    div.style.fontWeight = "bold";
+
+    div.style.zIndex = "9999";
+
+    div.style.boxShadow =
+        "0 5px 20px rgba(0,0,0,0.3)";
+
+    div.style.background =
+        success
+        ? "#22c55e"
+        : "#ef4444";
+
+    div.style.color = "white";
+
+    div.style.opacity = "0";
+
+    div.style.transition = "0.3s";
+
+    document.body.appendChild(div);
+
+    setTimeout(() => {
+        div.style.opacity = "1";
+    },10);
+
+    setTimeout(() => {
+
+        div.style.opacity = "0";
+
+        setTimeout(() => {
+            div.remove();
+        },300);
+
+    },3000);
+}
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+const menu =
+    document.getElementById("menu");
+
+// MENU
 
 if(!user){
+
     menu.innerHTML = `
         <button onclick="window.location.href='login.html'">
             Ingresar
         </button>
+
         <button onclick="window.location.href='register.html'">
             Registrarse
         </button>
     `;
 }
+
 else if(user.rol === "User"){
+
     menu.innerHTML = `
-        <div class="userInfo">Hola ${user.username}</div>
-        <button onclick="logout()">Salir</button>
-    `;
-}
-else if(user.rol === "Admin"){
-    menu.innerHTML = `
-        <div class="userInfo">Hola ${user.username}</div>
-        <button onclick="goAuditoria()">Auditoría</button>
-        <button onclick="window.location.href='admin.html'">Admin</button>
-        <button onclick="logout()">Salir</button>
+        <div class="welcome">
+            👋 ${user.username}
+        </div>
+        <button onclick="window.location.href='misentradas.html'">
+            Mis Entradas
+        </button>
+        <button onclick="logout()">
+            Salir
+        </button>
     `;
 }
 
+else if(user.rol === "Admin"){
+
+    menu.innerHTML = `
+        <div class="welcome">
+            ${user.username}
+        </div>
+        <button onclick="window.location.href='misentradas.html'">
+            Mis Entradas
+        </button>
+        <button onclick="goAuditoria()">
+            Auditoría
+        </button>
+
+        <button onclick="window.location.href='admin.html'">
+            Admin
+        </button>
+
+        <button onclick="logout()">
+            Salir
+        </button>
+    `;
+}
+
+// CARGAR EVENTOS
+async function loadEvents(){
+
+    const response =
+        await fetch(
+            "http://localhost:5123/api/events"
+        );
+
+    const events =
+        await response.json();
+
+    const container =
+        document.getElementById("events");
+
+    container.innerHTML = "";
+
+    events.forEach(event => {
+
+        container.innerHTML += `
+
+    <div class="card">
+
+        <div class="tag">
+            LIVE
+        </div>
+
+        <img src="${
+            event.imageUrl ||
+            'https://via.placeholder.com/500x500'
+        }">
+
+        <div class="overlay">
+
+            <h2>
+                ${event.name}
+            </h2>
+
+            <p>
+                ${event.venue}
+            </p>
+
+            <div class="available">
+
+                ${
+                    event.availableSeats > 0
+                    ? `🎟 ${event.availableSeats} disponibles`
+                    : `❌ AGOTADO`
+                }
+
+            </div>
+
+            <button
+                onclick="goEvent(${event.id})"
+
+                ${
+                    event.availableSeats <= 0
+                    ? "disabled"
+                    : ""
+                }
+            >
+                ${
+                    event.availableSeats > 0
+                    ? "Comprar entradas"
+                    : "Sin stock"
+                }
+            </button>
+
+        </div>
+
+    </div>
+`;
+    });
+}
+
+//Editar Evento
+async function editarEvento(id){
+
+    const nombre =
+        prompt("Nuevo nombre");
+
+    if(!nombre) return;
+
+    const venue =
+        prompt("Nuevo lugar");
+
+    if(!venue) return;
+
+    const addPlatea =
+        prompt("Agregar butacas Platea");
+
+    const addCampo =
+        prompt("Agregar butacas Campo");
+
+    const input =
+        document.createElement("input");
+
+    input.type = "file";
+
+    input.accept = "image/*";
+
+    input.onchange = async () => {
+
+        const file =
+            input.files[0];
+
+        const formData =
+            new FormData();
+
+        formData.append("name", nombre);
+
+        formData.append("venue", venue);
+
+        formData.append(
+            "addPlatea",
+            addPlatea || 0
+        );
+
+        formData.append(
+            "addCampo",
+            addCampo || 0
+        );
+
+        if(file){
+            formData.append("image", file);
+        }
+
+        const response = await fetch(
+            `http://localhost:5123/api/events/${id}`,
+            {
+                method:"PUT",
+                body: formData
+            });
+
+        if(response.ok){
+
+            showMessage("Evento editado correctamente");
+
+            loadEvents();
+        }
+        else{
+            showMessage("Error editando evento", false);
+        }
+    };
+
+    input.click();
+}
+
+// FUNCIONES
 function goEvent(id){
-    localStorage.removeItem("selectedSeats");
-    window.location.href = `seats.html?eventId=${id}`;
+
+    localStorage.removeItem(
+        "selectedSeats"
+    );
+
+    window.location.href =
+        `seats.html?eventId=${id}`;
 }
 
 function goAuditoria(){
-    window.location.href = "auditoria.html";
+
+    window.location.href =
+        "auditoria.html";
 }
 
 function logout(){
+
     localStorage.removeItem("user");
-    window.location.href = "index.html";
+
+    window.location.href =
+        "index.html";
 }
+
+loadEvents();
 
 </script>
 

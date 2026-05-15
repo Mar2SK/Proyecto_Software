@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using EntradasApi.Models;
 using EntradasApi.Data;
 
 namespace EntradasApi.Controllers
@@ -22,6 +23,20 @@ namespace EntradasApi.Controllers
                 .ToList();
 
             return Ok(sectores);
+        }
+
+        [HttpPost]
+        public IActionResult CreateSector(
+            int eventId,
+            [FromBody] Sector sector)
+        {
+            sector.EventId = eventId;
+
+            _context.Sectors.Add(sector);
+
+            _context.SaveChanges();
+
+            return Ok(sector);
         }
     }
 }

@@ -67,8 +67,8 @@ h2{
 }
 
 .selected{
-    border: 4px solid white;
-    background: #3b82f6 !important;
+    border:4px solid white;
+    background:#3b82f6 !important;
 }
 
 .legend{
@@ -119,6 +119,31 @@ h2{
     background:#475569;
 }
 
+@media(max-width:768px){
+
+    .container{
+        padding:15px;
+    }
+
+    .sector{
+        grid-template-columns:repeat(5,1fr);
+    }
+
+    .seat{
+        height:40px;
+        font-size:13px;
+    }
+
+    .legend{
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .buy-btn{
+        width:100%;
+    }
+}
+
 </style>
 
 </head>
@@ -135,16 +160,29 @@ h2{
 <div class="container">
 
 <div class="legend">
-    <div><div class="box disponible"></div>Disponible</div>
-    <div><div class="box reservado"></div>Reservado</div>
-    <div><div class="box vendido"></div>Vendido</div>
-</div>
 
-<h2>Sector Platea</h2>
-<div id="platea" class="sector"></div>
+    <div>
+        <div class="box disponible"></div>
+        Disponible
+    </div>
+
+    <div>
+        <div class="box reservado"></div>
+        Reservado
+    </div>
+
+    <div>
+        <div class="box vendido"></div>
+        Vendido
+    </div>
+
+</div>
 
 <h2>Sector Campo</h2>
 <div id="campo" class="sector"></div>
+
+<h2>Sector Platea</h2>
+<div id="platea" class="sector"></div>
 
 <button class="buy-btn" onclick="continuarCompra()">
     Continuar compra
@@ -154,146 +192,235 @@ h2{
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
+const params =
+    new URLSearchParams(window.location.search);
 
-const eventId = params.get("eventId");
+const eventId =
+    params.get("eventId");
 
 const API =
-`http://localhost:5123/api/events/${eventId}/Asiento`;
+`http://localhost:5123/api/events/${eventId}/asientos`;
 
 let selectedSeats = [];
+
+let allSeats = [];
 
 async function loadSeats(){
 
     try{
 
-        const res = await fetch(API);
+        const res =
+            await fetch(API);
 
         if(!res.ok){
 
-            alert("Error conectando con la API");
+            alert(
+                "Error conectando con la API"
+            );
 
             return;
         }
 
-        const seats = await res.json();
+        const seats =
+            await res.json();
+
+        const eventResponse =
+            await fetch(
+                "http://localhost:5123/api/events"
+            );
+
+        const events =
+            await eventResponse.json();
+
+        const currentEvent =
+            events.find(
+                e => e.id == eventId
+            );
+
+        if(currentEvent){
+
+            localStorage.setItem(
+                "eventName",
+                currentEvent.name
+            );
+
+            localStorage.setItem(
+                "eventVenue",
+                currentEvent.venue
+            );
+
+            localStorage.setItem(
+                "eventImage",
+                currentEvent.imageUrl
+            );
+        }
+
+        allSeats = seats;
 
         const platea =
-            document.getElementById("platea");
+            document.getElementById(
+                "platea"
+            );
 
         const campo =
-            document.getElementById("campo");
+            document.getElementById(
+                "campo"
+            );
 
         platea.innerHTML = "";
         campo.innerHTML = "";
 
         seats.forEach(seat => {
 
-            const div =
-                document.createElement("div");
+            const selected =
+                selectedSeats.some(
+                    s => s.id === seat.id
+                )
+                ? "selected"
+                : "";
 
-            div.classList.add("seat");
+            const seatHTML = `
 
-            if(seat.status === "Disponible"){
+                <div 
+                    class="
+                        seat
+                        ${seat.status.toLowerCase()}
+                        ${selected}
+                    "
 
-                div.classList.add("disponible");
+                    onclick="
+                        toggleSeat(${seat.id})
+                    "
+                >
+                    ${seat.number}
+                </div>
+            `;
+
+            if(
+                seat.sectorName ===
+                "Platea"
+            ){
+
+                platea.innerHTML +=
+                    seatHTML;
             }
 
-            else if(seat.status === "Reservado"){
+            else if(
+                seat.sectorName ===
+                "Campo"
+            ){
 
-                div.classList.add("reservado");
+                campo.innerHTML +=
+                    seatHTML;
             }
-
-            else{
-
-                div.classList.add("vendido");
-            }
-
-            div.innerText = seat.number;
-
-            if(selectedSeats.some(x => x.id === seat.id)){
-
-                div.classList.add("selected");
-            }
-
-            if(seat.status === "Disponible"){
-
-    div.onclick = () => {
-
-        if(selectedSeats.some(x => x.id === seat.id)){
-
-            selectedSeats = selectedSeats.filter(
-                x => x.id !== seat.id
-            );
-
-            loadSeats();
-            return;
-        }
-
-        // LIMITE
-        if(selectedSeats.length >= 2){
-            alert("Máximo 2 asientos");
-            return;
-        }
-
-        // AGREGAR
-        selectedSeats.push({
-            id: seat.id,
-            number: seat.number
         });
+    }
 
-        loadSeats();
-    };
-}
-
-            // SECTORES
-            if(seat.number <= 50){
-
-                platea.appendChild(div);
-            }
-
-            else{
-
-                campo.appendChild(div);
-            }
-
-        });
-
-    }catch(error){
+    catch(error){
 
         console.log(error);
 
-        alert("No se pudo conectar al servidor");
+        alert(
+            "No se pudo conectar al servidor"
+        );
     }
+}
+
+function toggleSeat(seatId){
+
+    const seat =
+        allSeats.find(
+            s => s.id == seatId
+        );
+
+    if(!seat) return;
+
+    if(seat.status !== "Disponible")
+        return;
+
+    // DESELECCIONAR
+    if(
+        selectedSeats.some(
+            x => x.id === seat.id
+        )
+    ){
+
+        selectedSeats =
+            selectedSeats.filter(
+                x => x.id !== seat.id
+            );
+
+        loadSeats();
+
+        return;
+    }
+
+    // LIMITE
+    if(selectedSeats.length >= 2){
+
+        alert(
+            "Máximo 2 asientos"
+        );
+
+        return;
+    }
+
+    // AGREGAR
+    selectedSeats.push({
+
+        id: seat.id,
+
+        number: seat.number
+    });
+
+    loadSeats();
 }
 
 function continuarCompra(){
 
     if(selectedSeats.length === 0){
 
-        alert("Seleccioná al menos un asiento");
+        alert(
+            "Seleccioná al menos un asiento"
+        );
 
         return;
     }
 
     localStorage.setItem(
+
         "selectedSeats",
-        JSON.stringify(selectedSeats)
+
+        JSON.stringify(
+            selectedSeats
+        )
     );
-    const user = localStorage.getItem("user");
+
+    const user =
+        localStorage.getItem(
+            "user"
+        );
 
     if(!user){
-        window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
+
         return;
     }
-    
+
     window.location.href =
         `checkout.html?eventId=${eventId}`;
 }
 
 function volverInicio(){
 
-    window.location.href = "index.html";
+    localStorage.removeItem(
+        "selectedSeats"
+    );
+
+    window.location.href =
+        "index.html";
 }
 
 loadSeats();
